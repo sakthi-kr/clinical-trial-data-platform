@@ -1,0 +1,36 @@
+{
+  "study_id": "SYN-CTQA-001",
+  "study_name": "Synthetic Multisite 12-Week Study",
+  "version": "0.1.0",
+  "synthetic_only": true,
+  "seed": 20261115,
+  "participant_count": 500,
+  "study_start_date": "2026-01-05",
+  "enrollment_spread_days": 35,
+  "sites": [
+    {"site_id": "S01", "site_name": "Fictional Site Alpha"},
+    {"site_id": "S02", "site_name": "Fictional Site Beta"},
+    {"site_id": "S03", "site_name": "Fictional Site Gamma"},
+    {"site_id": "S04", "site_name": "Fictional Site Delta"}
+  ],
+  "groups": ["ARM_A", "ARM_B"],
+  "visits": [
+    {"visit_code": "BASELINE", "day": 0},
+    {"visit_code": "WEEK04", "day": 28},
+    {"visit_code": "WEEK08", "day": 56},
+    {"visit_code": "WEEK12", "day": 84}
+  ],
+  "visit_window_days": 3,
+  "vital_measurements": [
+    {"test_code": "SBP", "unit": "mmHg", "mean": 125, "std_dev": 13, "simulation_min": 90, "simulation_max": 170, "round_digits": 0},
+    {"test_code": "HR", "unit": "beats/min", "mean": 74, "std_dev": 8, "simulation_min": 50, "simulation_max": 110, "round_digits": 0}
+  ],
+  "laboratory_measurements": [
+    {"test_code": "HGB", "unit": "g/dL", "mean": 13.8, "std_dev": 1.1, "simulation_min": 9.0, "simulation_max": 18.0, "round_digits": 2},
+    {"test_code": "GLU", "unit": "mg/dL", "mean": 100, "std_dev": 16, "simulation_min": 65, "simulation_max": 200, "round_digits": 2},
+    {"test_code": "CREAT", "unit": "mg/dL", "mean": 0.9, "std_dev": 0.2, "simulation_min": 0.3, "simulation_max": 2.0, "round_digits": 2},
+    {"test_code": "SOD", "unit": "mmol/L", "mean": 140, "std_dev": 2.2, "simulation_min": 130, "simulation_max": 150, "round_digits": 2}
+  ],
+  "adverse_event_probability": 0.12,
+  "adverse_event_terms": ["HEADACHE", "FATIGUE", "NAUSEA", "DIZZINESS"]
+}

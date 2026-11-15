@@ -1,0 +1,40 @@
+{
+  "generator_version": "0.1.0",
+  "participants_requested": 12,
+  "protocol_sha256": "89712719444375e008f89d19b597a55b6d159dedbb653fec86012f59df2b1238",
+  "seed": 20261115,
+  "study_id": "SYN-CTQA-001",
+  "synthetic_only": true,
+  "tables": {
+    "adverse_events": {
+      "file": "adverse_events.csv",
+      "rows": 2,
+      "sha256": "1b85f6fd8384165babe30ca253bb66984112c675b30fdfe4a717bbc85132f64f"
+    },
+    "laboratory_results": {
+      "file": "laboratory_results.csv",
+      "rows": 192,
+      "sha256": "ebfcde169dcdfb74e4bf54a9a89a98fd546a0f379516a4f1c9d37ed112b2c4e1"
+    },
+    "participants": {
+      "file": "participants.csv",
+      "rows": 12,
+      "sha256": "07acb5e299d9a43365037b7964c634e40473262258b6c16d1abe1161ff8ddec5"
+    },
+    "sites": {
+      "file": "sites.csv",
+      "rows": 4,
+      "sha256": "2d3e31ef9789845666f58ccec2f48f43ebaf236a8d314134b8a266ebec5c77c6"
+    },
+    "visits": {
+      "file": "visits.csv",
+      "rows": 48,
+      "sha256": "53c8ffb2a2f642b7530169424ff71ceeeb24d467480c631593336b59d7b04ce0"
+    },
+    "vital_signs": {
+      "file": "vital_signs.csv",
+      "rows": 96,
+      "sha256": "cba9d1d2a418bc74da653bb20360887dacc440606722a58854e6df7f99e773f3"
+    }
+  }
+}

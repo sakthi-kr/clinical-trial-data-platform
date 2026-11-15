@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clinical-trial-data-platform"
+version = "0.2.0"
+description = "A reproducible synthetic clinical study data foundation with planned data quality evaluation"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{name = "Sakthikumaran Ravichandran"}]
+dependencies = ["duckdb>=1.4.3,<3.0"]
+
+[project.optional-dependencies]
+dev = ["pytest==9.0.2"]
+
+[project.scripts]
+clinical-trial-generate = "clinical_trial.generate:main"
+clinical-trial-ingest = "clinical_trial.ingest:main"
+clinical-trial-verify = "clinical_trial.verify:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.setuptools.package-data]
+clinical_trial = ["db_schema.sql"]
