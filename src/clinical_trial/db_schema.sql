@@ -1,4 +1,4 @@
--- Phase 2: source provenance + typed relational tables. All records are synthetic.
+-- Source provenance and typed relational tables. All records are synthetic.
 -- A dataset is identified by the SHA-256 digest of the exact manifest bytes.
 -- Composite keys allow different generated batches to reuse participant IDs.
 

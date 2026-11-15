@@ -1,10 +1,10 @@
-"""Transactional, idempotent, file-traceable DuckDB ingestion for Phase 2.
+"""Transactional, idempotent, file-traceable DuckDB ingestion.
 
 Usage:
   python -m clinical_trial.ingest --input-dir data/generated --db data/study.duckdb
 
 No real health records. No automatic correction or rejection of clinically
-unusual values: medical-style checks belong to Phase 3.
+unusual values: medical-style checks are outside ingestion scope.
 """
 from __future__ import annotations
 

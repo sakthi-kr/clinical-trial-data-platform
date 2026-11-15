@@ -1,117 +1,124 @@
 # Clinical Trial Data Quality & Validation Platform
 
-**Status: Phase 1 implemented; Phase 2 ingestion implementation ready for local verification.** The repository contains a reproducible fictional-study generator, source-manifest verification, a typed DuckDB schema and a transactional ingestion pipeline. The Phase 3 clinical validation engine and dashboard are **not implemented yet**.
+A Python data pipeline for a synthetic multisite clinical study. It generates reproducible study records, validates the input files and loads them into a typed DuckDB database with source tracking and transactional imports.
 
-> **Synthetic data only.** This is an educational software/data-engineering demonstration, not a real clinical trial or medical assessment, and does not establish CDISC SDTM, GCP, privacy-law or regulatory compliance. Never add identifiable patient data.
+The project focuses on a basic but important data-engineering problem: **how to load study data reliably, preserve its origin and detect structural problems before analysis.**
 
-## Problem
+## What it does
 
-Clinical-study teams need repeatable, traceable ingestion before they can inspect data-quality issues. This repository generates a fictional four-site, 12-week study and loads the generated records into a typed relational database, with source-file checksums, automatic rejection of structurally malformed batches and detailed ingestion logs.
+- Generates a fictional 12-week study with four sites, 500 participants and four scheduled visits per participant by default.
+- Produces six related CSV datasets: sites, participants, visits, vital signs, laboratory results and adverse events.
+- Records file checksums and row counts in a SHA-256 manifest so a generated dataset can be verified before loading.
+- Checks required columns, identifiers, data types, date formats and cross-table references.
+- Loads records into DuckDB with explicit types, primary/foreign keys and all-or-nothing transactions.
+- Tracks imported source files and reports successful, skipped and failed imports.
+- Prevents duplicate ingestion of an identical source manifest, while allowing different generated datasets to coexist.
 
-## What is currently implemented
+## Data flow
 
-**Phase 1:** synthetic study generator, six CSV source tables, manifest SHA-256 checksums, fixed seed, reproducibility tests.
-
-**Phase 2:** six typed DuckDB tables, source-file provenance, participant/visit foreign keys, strong parsing of dates and numeric data, dataset-based idempotency, transactional rollback on failure, failed/skipped/success event history, per-table count reconciliation and database integration tests.
-
-This phase checks **structural validity**, not clinical acceptability of recorded values. More advanced quality rules and issues will arrive in Phase 3.
-
-## Requirements and cost
-
-- Windows 11 with **Python 3.11** recommended; also tested in CI on 3.12 once installed in GitHub Actions.
-- CPU only. No GPU, cloud, API key, Docker or Java.
-- **DuckDB** (free, local) is the only runtime dependency. **pytest** is the development/test dependency.
-- Local free disk space: a few hundred MB for the environment and sample database are normally sufficient; 5 GB provides comfortable room for later phases.
-
-## Windows PowerShell quick start
-
-Extract this repository to a new folder and open the `clinical-trial-data-platform` directory in PyCharm. In its terminal:
-
-```powershell
-py -3.11 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
-
-# Phase 1 — generate and verify
-.\.venv\Scripts\python.exe -m clinical_trial.generate --output-dir data/generated
-.\.venv\Scripts\python.exe -m clinical_trial.verify --input-dir data/generated
-
-# Phase 2 — populate a local DuckDB database
-.\.venv\Scripts\python.exe -m clinical_trial.ingest --input-dir data/generated --db data/study.duckdb
-
-# Repeat the same import: it should show SKIPPED, not duplicate data
-.\.venv\Scripts\python.exe -m clinical_trial.ingest --input-dir data/generated --db data/study.duckdb
-
-# Inspect counts and ingestion events
-.\.venv\Scripts\python.exe -m clinical_trial.ingest --db data/study.duckdb --status
-
-# Isolated end-to-end smoke test (temporary files, then clean up)
-.\.venv\Scripts\python.exe -m clinical_trial.smoke
-
-# Tests (includes the existing Phase 1 tests)
-.\.venv\Scripts\python.exe -m pytest -q
+```mermaid
+flowchart LR
+    A[Study configuration] --> B[Synthetic CSV generator]
+    B --> C[Manifest and checksums]
+    C --> D[Source validation]
+    D --> E[DuckDB ingestion]
+    E --> F[Relational study tables]
+    E --> G[Ingestion history]
 ```
 
-No PowerShell execution-policy changes are required because these commands call the venv interpreter directly. The `.venv` directory and `.duckdb` database remain local and are ignored by Git.
+The input data is synthetic. Study groups, measurements and adverse events are simulated; they are not records from a clinical trial.
 
-**Upgrading from Phase 1:** This ZIP contains the same generator and protocol as Phase 1 but now adds DuckDB. You can either regenerate `data/generated` in the new folder with the command above (simplest), or copy your existing `data/generated` folder across. Do not overwrite your original project until Phase 2 passes locally.
+## Getting started
 
-## Expected Phase 2 output (500 participants)
+**Requirements:** Python 3.11+ and Git. The application runs locally on Windows, Linux or macOS. DuckDB is installed as a Python dependency; no database server or cloud account is needed.
 
-| Table | Rows |
+From the project root, on Windows using **Git Bash**:
+
+```bash
+py -3.11 -m venv .venv
+source .venv/Scripts/activate
+python -m pip install -e '.[dev]'
+```
+
+Generate and verify the study data:
+
+```bash
+python -m clinical_trial.generate --output-dir data/generated
+python -m clinical_trial.verify --input-dir data/generated
+```
+
+Load the dataset and inspect its ingestion history:
+
+```bash
+python -m clinical_trial.ingest --input-dir data/generated --db data/study.duckdb
+python -m clinical_trial.ingest --db data/study.duckdb --status
+```
+
+Importing the same dataset again returns `SKIPPED` rather than creating duplicates:
+
+```bash
+python -m clinical_trial.ingest --input-dir data/generated --db data/study.duckdb
+```
+
+Generated CSV files and the local DuckDB database are ignored by Git. A small example dataset is available in [`data/example/`](data/example/).
+
+## Study data
+
+The default configuration is in [`configs/study_protocol.json`](configs/study_protocol.json). The generator creates the following records with its default seed:
+
+| Dataset | Records |
 | --- | ---: |
-| sites | 4 |
-| participants | 500 |
-| visits | 2,000 |
-| vital_signs | 4,000 |
-| laboratory_results | 8,000 |
-| adverse_events | Deterministic for seed in protocol (49 for default baseline) |
+| Sites | 4 |
+| Participants | 500 |
+| Visits | 2,000 |
+| Vital-sign measurements | 4,000 |
+| Laboratory results | 8,000 |
+| Adverse events | 49 |
 
-On the first import, look for `"status": "LOADED"` and reconciled counts. On the second, look for `"status": "SKIPPED"`. The database uses the manifest's exact SHA-256 as `dataset_id`; different synthetic batches can coexist without mixing participant IDs.
+The tables use dataset-scoped keys so separately generated datasets can be stored in the same database without mixing their records. Dates are stored as `DATE`, measured values as `DECIMAL(18,6)` and source file metadata in dedicated provenance tables.
+
+See the [data dictionary](docs/data_dictionary.md) for fields and relationships, and [ingestion design](docs/ingestion.md) for the database contracts and failure behaviour.
+
+## Testing
+
+Run the unit and integration tests:
+
+```bash
+python -m pytest -q -rs
+```
+
+Run an isolated end-to-end smoke test:
+
+```bash
+python -m clinical_trial.smoke
+```
+
+The test suite covers deterministic generation, manifest integrity, source-data constraints, relational loading, duplicate imports and transaction rollback. The repository also includes a GitHub Actions workflow for running the tests and a sample ingestion sequence.
 
 ## Repository layout
 
 ```text
-clinical-trial-data-platform/
-├── configs/study_protocol.json
-├── src/clinical_trial/
-│   ├── __init__.py
-│   ├── generate.py               # Phase 1 deterministic generator
-│   ├── verify.py                 # Phase 1 file integrity checks
-│   ├── schema.py                 # CSV contracts
-│   ├── validate_source.py        # Phase 2 strict structural preflight
-│   ├── ingest.py                 # Phase 2 DuckDB CLI and transactional loader
-│   ├── smoke.py                  # Independent end-to-end smoke test
-│   └── db_schema.sql             # Typed relational schema and lineage tables
-├── tests/
-│   ├── test_generate.py
-│   ├── test_validate_source.py
-│   └── test_ingest.py            # Requires DuckDB; skipped if missing
-├── data/example/                 # Small committed synthetic CSV example
-├── data/generated/               # Generated locally; ignored by git
-├── docs/
-│   ├── data_dictionary.md
-│   ├── study_protocol.md
-│   ├── phase2_ingestion.md
-│   └── decisions.md
-├── .github/workflows/tests.yml
-├── PLAN.md
-└── pyproject.toml
+configs/                 Study configuration
+data/example/             Small synthetic CSV sample
+docs/                     Study protocol, data dictionary, ingestion design
+src/clinical_trial/       Generator, source checks and DuckDB loader
+tests/                    Unit and database integration tests
+.github/workflows/        Automated checks
 ```
 
-## Project documentation
+## Scope and limitations
 
-- [Protocol and caveats](docs/study_protocol.md)
+The current pipeline validates **file integrity and structural consistency**, not the clinical plausibility of every observation. A value can be correctly formatted and still require clinical review. The simulated measurements are not medical reference ranges, and the software is not intended for clinical operations or regulatory submissions. The tables draw on familiar clinical-study concepts but are not CDISC SDTM-compliant datasets.
+
+No real patient data is used or needed.
+
+## Documentation
+
+- [Synthetic study protocol](docs/study_protocol.md)
 - [Data dictionary](docs/data_dictionary.md)
-- [Phase 2 database and provenance design](docs/phase2_ingestion.md)
-- [Roadmap and phase acceptance tests](PLAN.md)
-- [Design decisions](docs/decisions.md)
+- [Database and ingestion design](docs/ingestion.md)
+- [Architecture decisions](docs/decisions.md)
 
-## Roadmap
+## License
 
-**Phase 3:** clinical rule engine and traceable issue reports. **Phase 4:** controlled error injection, known-ground-truth evaluation and honest precision/recall. **Phase 5:** Streamlit quality dashboard. **Phase 6:** reviewed issue lifecycle and CDISC-inspired exports. **Phase 7:** reproducibility review and tagged release.
-
-## External concepts
-
-- [DuckDB SQL transaction reference](https://duckdb.org/docs/current/sql/statements/transactions)
-- [CDISC study data concepts](https://www.cdisc.org/standards/foundational/sdtm), for reference only
-- [Synthea](https://github.com/synthetichealth/synthea), an optional future source of *synthetic EHR* context, not used by this generator
+[MIT](LICENSE)

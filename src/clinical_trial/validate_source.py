@@ -1,6 +1,6 @@
-"""Phase-2 structural and type checks before transactional DuckDB ingestion.
+"""Structural and type checks before transactional DuckDB ingestion.
 
-This is intentionally NOT the clinical rules engine (Phase 3). Unexpected
+This is not a clinical plausibility rules engine. Unexpected
 measurement ranges and protocol deviations are preserved for later review.
 """
 from __future__ import annotations

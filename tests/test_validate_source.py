@@ -1,4 +1,4 @@
-"""Tests runnable without DuckDB: Phase-2 preflight of source contracts."""
+"""Tests runnable without DuckDB: preflight checks for source contracts."""
 from __future__ import annotations
 
 import csv
@@ -86,6 +86,6 @@ def test_ongoing_adverse_event_null_end_date_allowed(tmp_path: Path):
 
 def test_preflight_does_not_enforce_clinical_ranges_yet(tmp_path: Path):
     folder = seed_dataset(tmp_path)
-    # Clinical-range checks intentionally belong to Phase 3.
+    # Clinical-range checks are separate from structural preflight.
     change_cell(folder, "laboratory_results", "result_value", "100000.3")
     assert check_source(folder)["synthetic_only"] is True

@@ -1,7 +1,7 @@
-"""Verify generated source-file integrity against the Phase-1 manifest.
+"""Verify generated source-file integrity against its manifest.
 
 This command checks file presence, CSV headers, row counts and hashes. It does
-NOT perform clinical data-quality validation, which belongs to later phases.
+NOT perform clinical data-quality validation.
 """
 
 from __future__ import annotations

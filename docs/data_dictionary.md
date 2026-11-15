@@ -1,6 +1,6 @@
-# Data dictionary — Phase 1
+# Data dictionary
 
-All identifiers below are **synthetic**, and tables are stored as UTF-8 CSV. Date columns use `YYYY-MM-DD`. Numeric values are serialized as strings in CSV and will be explicitly typed during Phase 2 ingestion. The CSV schema is enforced by `src/clinical_trial/schema.py`.
+All identifiers below are **synthetic**, and tables are stored as UTF-8 CSV. Date columns use `YYYY-MM-DD`. Numeric values are serialized as strings in CSV and explicitly typed during DuckDB ingestion. The CSV schema is enforced by `src/clinical_trial/schema.py`.
 
 ## Relationships and grain
 
@@ -41,7 +41,7 @@ erDiagram
 | `planned_date` | ISO date | enrollment date + protocol day |
 | `actual_date` | ISO date | within fictional protocol window in clean baseline |
 
-Unique business key: (`participant_id`, `visit_code`). In Phase 4 this may be corrupted for duplicate-detection tests.
+Unique business key: (`participant_id`, `visit_code`). This business key is an assumption of the clean synthetic dataset.
 
 ### `vital_signs` — one row per visit and measurement type
 
@@ -78,6 +78,10 @@ Unique clean-data business key: (`visit_id`, `test_code`).
 | `start_date` | ISO date | on/after enrollment |
 | `end_date` | optional ISO date | empty for simulated ongoing events; otherwise on/after start |
 
-## Planned future technical tables
+## Ingestion metadata tables
 
-Phase 2 onward adds `ingestion_runs`, `source_files`, `quality_rules`, `quality_issues`, `injected_errors`, and `audit_events`, all documented when implemented.
+- `datasets`: source manifest hash, study ID, source directory and ingestion timestamp.
+- `source_files`: source filename, content checksum and expected row count.
+- `ingestion_events`: successful, skipped and failed ingestion attempts.
+
+All loaded study tables include `dataset_id` to isolate different synthetic generations.

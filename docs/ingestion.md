@@ -1,9 +1,9 @@
-# Phase 2 — transactional DuckDB ingestion
+# Transactional DuckDB ingestion
 
 ## Guarantees and scope
 
 - A six-file dataset must pass `verify_manifest()` (presence, expected headers, manifest row counts, per-file SHA-256) and a **structural preflight** (nonempty required fields, ISO dates, valid integer/decimal strings, unique primary IDs, and foreign-key references).
-- Structural preflight is not clinical review. Physically unusual values are deliberately preserved for a *future* Phase 3 rules engine; this phase does not identify suspected protocol deviations.
+- Structural preflight is not clinical review. Physically unusual values are deliberately preserved for a separate clinical rules engine; this ingestion layer does not identify suspected protocol deviations.
 - The entire batch is ingested in one transaction. If any SQL conversion, foreign-key, or row-count reconciliation fails, the batch is rolled back and a `FAILED` event is recorded afterwards.
 - Ingesting the identical manifest a second time records a `SKIPPED` event; it does not add duplicate measurements.
 - Different manifests (e.g. different seeds) get distinct dataset IDs, so identical participant identifiers can coexist in separate batches.
@@ -62,9 +62,9 @@ Running `ingest` twice should report `LOADED` then `SKIPPED` for the *same* mani
 
 ## Remaining caveats
 
-- The Phase 2 schema uses simplified names, not CDISC SDTM compliance or a production clinical data model.
+- The current schema uses simplified names, not CDISC SDTM compliance or a production clinical data model.
 - The source manifest is a tamper-detection aid, **not a cryptographic signature of authenticity**; anyone who controls the sources can rewrite hashes.
 - This is a local single-writer demonstration, not a concurrent hosted data warehouse.
-- Nothing is quarantined and automatically corrected. Phase 2 rejects a bad batch atomically and stores an error event; row-level issues and triage will be introduced in Phases 3 and 6.
+- Nothing is quarantined and automatically corrected. The importer rejects a bad batch atomically and stores an error event; it does not provide record-level clinical issue triage.
 - Data validation rules such as visit-window checks, expected units or physiological ranges are deliberately not evaluated here.
 - The integration tests require a working `duckdb` installation. Without it, pytest skips that module and passes the source validation/unit tests only.
