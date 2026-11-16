@@ -64,6 +64,18 @@ Review the loaded data with the default study-data quality rules:
 python -m clinical_trial.quality --db data/study.duckdb --report data/quality/issues.csv
 ```
 
+## Controlled data-quality benchmark
+
+A deterministic challenge dataset tests the review rules against deliberately corrupted **synthetic** records. The benchmark includes 19 injected cases and 22 expected findings, including documented cases where one mutation triggers two checks.
+
+```bash
+python -m clinical_trial.challenge inject --source data/generated --output data/challenge
+python -m clinical_trial.ingest --input-dir data/challenge --db data/challenge.duckdb
+python -m clinical_trial.challenge score --db data/challenge.duckdb --truth data/challenge/ground_truth.json --report-dir data/benchmark
+```
+
+The scorer matches each expected finding by rule, table and record ID, and reports precision, recall, F1, false positives and false negatives. The synthetic challenge is a regression test of the implemented rules, **not** an estimate of performance on real-world clinical data. See [benchmark methodology](docs/benchmark.md) for the injected cases, scoring and limitations.
+
 Importing the same dataset again returns `SKIPPED` rather than creating duplicates:
 
 ```bash
