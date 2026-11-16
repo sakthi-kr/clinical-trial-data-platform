@@ -16,6 +16,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install runtime and dev dependencies
         run: python -m pip install --upgrade pip && python -m pip install -e '.[dev,dashboard]'
+      - name: Verify installed dependency consistency
+        run: python -m pip check
       - name: Run all unit and database integration tests
         run: python -m pytest -q -rs
       - name: End-to-end smoke test
@@ -43,3 +45,5 @@ jobs:
         run: |
           python -m clinical_trial.export_domains --help
           python -m clinical_trial.review --help
+      - name: Verify complete synthetic study workflow in a fresh directory
+        run: python scripts/verify_release.py

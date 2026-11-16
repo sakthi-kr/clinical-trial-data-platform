@@ -21,3 +21,8 @@ data/quality/
 
 # Simplified synthetic domain exports (not regulatory data)
 data/exports/
+
+# Local editor state and run logs
+.idea/
+.vscode/
+*.log

@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "clinical-trial-data-platform"
-version = "0.6.0"
-description = "Synthetic clinical study data ingestion, quality checks and reproducible fault-injection evaluation"
+version = "0.7.0"
+description = "Local synthetic clinical study data generation, validation, review and quality evaluation"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
