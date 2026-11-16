@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "clinical-trial-data-platform"
-version = "0.4.0"
+version = "0.5.0"
 description = "Synthetic clinical study data ingestion, quality checks and reproducible fault-injection evaluation"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -14,6 +14,7 @@ dependencies = ["duckdb>=1.4.3,<3.0", "pytz>=2024.1"]
 
 [project.optional-dependencies]
 dev = ["pytest==9.0.2"]
+dashboard = ["streamlit>=1.40,<2", "plotly>=5.24,<7"]
 
 [project.scripts]
 clinical-trial-generate = "clinical_trial.generate:main"
