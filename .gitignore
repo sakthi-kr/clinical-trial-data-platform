@@ -13,5 +13,8 @@ data/generated/*
 .env
 .env.*
 
-# Generated data-quality report exports
+# Synthetic benchmark fixtures and review exports
+data/challenge/
+data/challenge_clean/
+data/benchmark/
 data/quality/

@@ -31,3 +31,11 @@ jobs:
           python -m clinical_trial.ingest --db data/ci.duckdb --status
       - name: Review clinical study data quality
         run: python -m clinical_trial.quality --db data/ci.duckdb --report data/quality/issues.csv
+      - name: Evaluate controlled synthetic defects
+        run: |
+          python -m clinical_trial.generate --participants 180 --output-dir data/challenge_clean
+          python -m clinical_trial.challenge inject --source data/challenge_clean --output data/challenge
+          python -m clinical_trial.verify --input-dir data/challenge
+          python -m clinical_trial.ingest --input-dir data/challenge --db data/challenge.duckdb
+          python -m clinical_trial.challenge score --db data/challenge.duckdb --truth data/challenge/ground_truth.json --report-dir data/benchmark
+          python -c "import json; r=json.load(open('data/benchmark/benchmark.json')); assert r['overall']['tp']==22 and r['overall']['fp']==0 and r['overall']['fn']==0"
