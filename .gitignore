@@ -12,3 +12,6 @@ data/generated/*
 *.db
 .env
 .env.*
+
+# Generated data-quality report exports
+data/quality/

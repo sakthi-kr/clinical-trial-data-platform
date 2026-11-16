@@ -1,8 +1,8 @@
 # Clinical Trial Data Quality & Validation Platform
 
-A Python data pipeline for a synthetic multisite clinical study. It generates reproducible study records, validates the input files and loads them into a typed DuckDB database with source tracking and transactional imports.
+A local Python data platform for a synthetic multisite clinical study. It generates reproducible records, loads them into DuckDB with source tracking, and reviews them against configurable study-data quality rules.
 
-The project focuses on a basic but important data-engineering problem: **how to load study data reliably, preserve its origin and detect structural problems before analysis.**
+The project focuses on reliable data ingestion and traceable detection of inconsistent study records.
 
 ## What it does
 
@@ -13,6 +13,8 @@ The project focuses on a basic but important data-engineering problem: **how to 
 - Loads records into DuckDB with explicit types, primary/foreign keys and all-or-nothing transactions.
 - Tracks imported source files and reports successful, skipped and failed imports.
 - Prevents duplicate ingestion of an identical source manifest, while allowing different generated datasets to coexist.
+- Reviews expected visits, measurement completeness, dates, codes, units, synthetic review ranges and adverse-event chronology without changing source records.
+- Stores issue IDs, severity, affected-record references and evaluation history; exports a CSV issue report.
 
 ## Data flow
 
@@ -24,6 +26,8 @@ flowchart LR
     D --> E[DuckDB ingestion]
     E --> F[Relational study tables]
     E --> G[Ingestion history]
+    F --> H[Data quality review]
+    H --> I[Issue log and CSV report]
 ```
 
 The input data is synthetic. Study groups, measurements and adverse events are simulated; they are not records from a clinical trial.
@@ -54,6 +58,12 @@ python -m clinical_trial.ingest --input-dir data/generated --db data/study.duckd
 python -m clinical_trial.ingest --db data/study.duckdb --status
 ```
 
+Review the loaded data with the default study-data quality rules:
+
+```bash
+python -m clinical_trial.quality --db data/study.duckdb --report data/quality/issues.csv
+```
+
 Importing the same dataset again returns `SKIPPED` rather than creating duplicates:
 
 ```bash
@@ -77,7 +87,7 @@ The default configuration is in [`configs/study_protocol.json`](configs/study_pr
 
 The tables use dataset-scoped keys so separately generated datasets can be stored in the same database without mixing their records. Dates are stored as `DATE`, measured values as `DECIMAL(18,6)` and source file metadata in dedicated provenance tables.
 
-See the [data dictionary](docs/data_dictionary.md) for fields and relationships, and [ingestion design](docs/ingestion.md) for the database contracts and failure behaviour.
+See the [data dictionary](docs/data_dictionary.md) for fields and relationships, the [ingestion design](docs/ingestion.md) for database contracts, and the [quality checks](docs/data_quality.md) for the review rules and their limitations.
 
 ## Testing
 
@@ -93,22 +103,22 @@ Run an isolated end-to-end smoke test:
 python -m clinical_trial.smoke
 ```
 
-The test suite covers deterministic generation, manifest integrity, source-data constraints, relational loading, duplicate imports and transaction rollback. The repository also includes a GitHub Actions workflow for running the tests and a sample ingestion sequence.
+The test suite covers deterministic generation, manifest integrity, relational loading, duplicate imports, rollback and quality-review behaviour on controlled defects. The repository also includes a GitHub Actions workflow for running the tests and a sample ingestion sequence.
 
 ## Repository layout
 
 ```text
-configs/                 Study configuration
+configs/                 Study configuration and quality rules
 data/example/             Small synthetic CSV sample
 docs/                     Study protocol, data dictionary, ingestion design
-src/clinical_trial/       Generator, source checks and DuckDB loader
+src/clinical_trial/       Generator, source checks, DuckDB loader and quality review
 tests/                    Unit and database integration tests
 .github/workflows/        Automated checks
 ```
 
 ## Scope and limitations
 
-The current pipeline validates **file integrity and structural consistency**, not the clinical plausibility of every observation. A value can be correctly formatted and still require clinical review. The simulated measurements are not medical reference ranges, and the software is not intended for clinical operations or regulatory submissions. The tables draw on familiar clinical-study concepts but are not CDISC SDTM-compliant datasets.
+File integrity and structural consistency are checked before ingestion. The quality engine flags rule-based exceptions for review but does not determine clinical plausibility, adjudicate safety or change observations. Its numeric thresholds are **synthetic study review bounds, not clinical reference ranges**. The software is not intended for clinical operations or regulatory submissions. The tables draw on familiar clinical-study concepts but are not CDISC SDTM-compliant datasets.
 
 No real patient data is used or needed.
 
@@ -117,6 +127,7 @@ No real patient data is used or needed.
 - [Synthetic study protocol](docs/study_protocol.md)
 - [Data dictionary](docs/data_dictionary.md)
 - [Database and ingestion design](docs/ingestion.md)
+- [Data quality rules and reporting](docs/data_quality.md)
 - [Architecture decisions](docs/decisions.md)
 
 ## License
