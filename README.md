@@ -1,5 +1,7 @@
 # Clinical Trial Data Quality & Validation Platform
 
+[![Clinical study data tests](https://github.com/sakthi-kr/clinical-trial-data-platform/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/sakthi-kr/clinical-trial-data-platform/actions/workflows/tests.yml)
+
 A local Python data platform for a synthetic multisite clinical study. It generates reproducible records, loads them into DuckDB with source tracking, and reviews them against configurable study-data quality rules.
 
 The project focuses on reliable data ingestion and traceable detection of inconsistent study records.
@@ -17,6 +19,18 @@ The project focuses on reliable data ingestion and traceable detection of incons
 - Stores issue IDs, severity, affected-record references and evaluation history; exports a CSV issue report.
 - Displays quality findings in a local Streamlit dashboard, with reviewer notes recorded separately from synthetic study data.
 - Produces five simplified, explicitly noncompliant CDISC-inspired synthetic CSV views.
+
+## Evidence at a glance
+
+| Area | Verified result |
+| --- | --- |
+| Synthetic study | Four sites, 500 participants, 2,000 visits |
+| Data ingestion | Six typed source tables, file checksums, provenance and duplicate-load protection |
+| Quality review | 19 configurable rule IDs with record-level findings |
+| Controlled benchmark | 19 injected cases; all 22 expected rule-level findings detected, with no extra findings |
+| Tests | 68 automated tests passing on Python 3.11 and 3.12 at release `v0.7.0` |
+
+The benchmark checks deliberately constructed defects against the rules used to detect them. It tests software consistency, **not clinical accuracy**. See [benchmark methodology](docs/benchmark.md) and [reproducibility](docs/reproducibility.md).
 
 ## Data flow
 
@@ -176,6 +190,8 @@ No real patient data is used or needed.
 - [Reproducing the demonstration](docs/reproducibility.md)
 - [Changelog](CHANGELOG.md)
 
-## License
+## Release and license
+
+The first audited version is [v0.7.0](https://github.com/sakthi-kr/clinical-trial-data-platform/releases/tag/v0.7.0). Changes are recorded in the [changelog](CHANGELOG.md).
 
 [MIT](LICENSE)
