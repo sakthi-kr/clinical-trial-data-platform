@@ -133,7 +133,7 @@ def _inject(tables: dict[str, list[dict[str, str]]], rules: dict[str, Any]) -> l
     add("late_visit", "Visit recorded outside allowed time window", [("V005", "visits", v["visit_id"])])
     v = visit(9)
     enrolled = date.fromisoformat(by_pid[v["participant_id"]]["enrollment_date"])
-    v["actual_date"] = (enrolled - timedelta(days=1)).isoformat()
+    v["actual_date"] = (enrolled - timedelta(days=rules["visit_window_days"] + 2)).isoformat()
     add("visit_before_enrollment", "Baseline recorded before enrolment; also outside visit window", [
         ("V006", "visits", v["visit_id"]), ("V005", "visits", v["visit_id"])])
 
