@@ -39,3 +39,7 @@ jobs:
           python -m clinical_trial.ingest --input-dir data/challenge --db data/challenge.duckdb
           python -m clinical_trial.challenge score --db data/challenge.duckdb --truth data/challenge/ground_truth.json --report-dir data/benchmark
           python -c "import json; r=json.load(open('data/benchmark/benchmark.json')); assert r['overall']['tp']==22 and r['overall']['fp']==0 and r['overall']['fn']==0"
+      - name: Verify synthetic export and review modules
+        run: |
+          python -m clinical_trial.export_domains --help
+          python -m clinical_trial.review --help

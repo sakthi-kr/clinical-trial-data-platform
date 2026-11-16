@@ -112,3 +112,19 @@ CREATE TABLE IF NOT EXISTS quality_issues (
     expected_value VARCHAR,
     PRIMARY KEY (dataset_id, issue_id)
 );
+
+-- Local, append-only-at-application-layer reviewer decisions. Previous events
+-- are not removed when current quality findings are replaced by a new run.
+-- This is not authenticated or tamper-resistant regulatory audit storage.
+CREATE TABLE IF NOT EXISTS issue_review_events (
+    event_id VARCHAR PRIMARY KEY,
+    dataset_id VARCHAR NOT NULL REFERENCES datasets(dataset_id),
+    issue_id VARCHAR NOT NULL,
+    issue_signature VARCHAR NOT NULL,
+    review_version INTEGER NOT NULL CHECK (review_version > 0),
+    status VARCHAR NOT NULL CHECK (status IN ('IN_REVIEW', 'CONFIRMED', 'DISMISSED')),
+    reviewer VARCHAR NOT NULL,
+    note VARCHAR NOT NULL,
+    recorded_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (dataset_id, issue_id, issue_signature, review_version)
+);

@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from clinical_trial.ingest import _db_module
+from clinical_trial.review import reviews_for_current, DEFAULT_STATUS
 
 
 class DashboardDataError(RuntimeError):
@@ -21,7 +22,7 @@ class DashboardDataError(RuntimeError):
 EXPORT_COLUMNS = (
     "rule_id", "severity", "site_id", "visit_code", "source_table",
     "record_id", "participant_id", "visit_id", "message", "observed_value",
-    "expected_value", "issue_id", "dataset_id",
+    "expected_value", "issue_id", "dataset_id", "review_status",
 )
 
 
@@ -115,7 +116,11 @@ def load_snapshot(db_path: Path, dataset_id: str) -> dict[str, Any]:
             WHERE i.dataset_id = ?
             ORDER BY i.rule_id, i.source_table, i.record_id
         """, [dataset_id])
+        review_states, review_history = reviews_for_current(con, dataset_id, issues)
+        for issue in issues:
+            issue.update(review_states[issue["issue_id"]])
         return {
+            "review_history": review_history,
             "dataset": selected[0],
             "counts": counts,
             "sites": sites,
@@ -138,6 +143,7 @@ def filter_issues(
     severity: str | None = None,
     rule_ids: list[str] | None = None,
     participant_text: str = "",
+    review_status: str | None = None,
 ) -> list[dict[str, Any]]:
     """Apply combined filters without changing the underlying rows."""
     term = participant_text.strip().casefold()
@@ -147,6 +153,7 @@ def filter_issues(
         and (visit_code is None or row["visit_code"] == visit_code)
         and (severity is None or row["severity"] == severity)
         and (allowed is None or row["rule_id"] in allowed)
+        and (review_status is None or row.get("review_status", DEFAULT_STATUS) == review_status)
         and (not term or term in str(row.get("participant_id") or "").casefold())
     ]
 
