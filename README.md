@@ -84,6 +84,17 @@ python -m clinical_trial.ingest --input-dir data/generated --db data/study.duckd
 
 Generated CSV files and the local DuckDB database are ignored by Git. A small example dataset is available in [`data/example/`](data/example/).
 
+## Explore study quality in the dashboard
+
+The optional local Streamlit dashboard shows study counts, current findings by rule/site/visit/severity, an interactive findings table, and quality evaluation history. Data is queried **read-only**; ingestion and reviews remain separate commands.
+
+```bash
+python -m pip install -e '.[dev,dashboard]'
+python -m streamlit run src/clinical_trial/dashboard.py
+```
+
+By default, the dashboard opens the controlled synthetic challenge database if present, otherwise the clean study database. The clean dataset is expected to have no findings; use the [controlled benchmark](docs/benchmark.md) to populate a demonstration with known issues. See [dashboard usage](docs/dashboard.md) for filters and limitations.
+
 ## Study data
 
 The default configuration is in [`configs/study_protocol.json`](configs/study_protocol.json). The generator creates the following records with its default seed:
