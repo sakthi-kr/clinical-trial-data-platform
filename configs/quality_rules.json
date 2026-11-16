@@ -1,0 +1,25 @@
+{
+  "study_id": "SYN-CTQA-001",
+  "allowed_groups": ["ARM_A", "ARM_B"],
+  "allowed_recorded_sex": ["F", "M", "U"],
+  "age_years": {"min": 18, "max": 80},
+  "visits": [
+    {"visit_code": "BASELINE", "day": 0},
+    {"visit_code": "WEEK04", "day": 28},
+    {"visit_code": "WEEK08", "day": 56},
+    {"visit_code": "WEEK12", "day": 84}
+  ],
+  "visit_window_days": 3,
+  "vital_signs": {
+    "SBP": {"unit": "mmHg", "review_min": 90, "review_max": 170},
+    "HR": {"unit": "beats/min", "review_min": 50, "review_max": 110}
+  },
+  "laboratory_results": {
+    "HGB": {"unit": "g/dL", "review_min": 9, "review_max": 18},
+    "GLU": {"unit": "mg/dL", "review_min": 65, "review_max": 200},
+    "CREAT": {"unit": "mg/dL", "review_min": 0.3, "review_max": 2},
+    "SOD": {"unit": "mmol/L", "review_min": 130, "review_max": 150}
+  },
+  "allowed_adverse_event_terms": ["HEADACHE", "FATIGUE", "NAUSEA", "DIZZINESS"],
+  "allowed_adverse_event_severity": ["MILD", "MODERATE"]
+}

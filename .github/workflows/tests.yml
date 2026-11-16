@@ -29,3 +29,5 @@ jobs:
           python -m clinical_trial.ingest --input-dir data/generated --db data/ci.duckdb
           python -m clinical_trial.ingest --input-dir data/generated --db data/ci.duckdb
           python -m clinical_trial.ingest --db data/ci.duckdb --status
+      - name: Review clinical study data quality
+        run: python -m clinical_trial.quality --db data/ci.duckdb --report data/quality/issues.csv

@@ -86,3 +86,29 @@ CREATE TABLE IF NOT EXISTS adverse_events (
     PRIMARY KEY (dataset_id, event_id),
     FOREIGN KEY (dataset_id, participant_id) REFERENCES participants(dataset_id, participant_id)
 );
+
+-- Non-destructive quality review. Individual findings refer to the latest
+-- evaluation for a dataset. The evaluation history is retained on reruns.
+CREATE TABLE IF NOT EXISTS quality_runs (
+    run_id VARCHAR PRIMARY KEY,
+    dataset_id VARCHAR NOT NULL REFERENCES datasets(dataset_id),
+    ruleset_sha256 VARCHAR NOT NULL,
+    evaluated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    issue_count BIGINT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS quality_issues (
+    dataset_id VARCHAR NOT NULL REFERENCES datasets(dataset_id),
+    issue_id VARCHAR NOT NULL,
+    run_id VARCHAR NOT NULL REFERENCES quality_runs(run_id),
+    rule_id VARCHAR NOT NULL,
+    severity VARCHAR NOT NULL CHECK (severity IN ('ERROR', 'WARNING')),
+    source_table VARCHAR NOT NULL,
+    record_id VARCHAR NOT NULL,
+    participant_id VARCHAR,
+    visit_id VARCHAR,
+    message VARCHAR NOT NULL,
+    observed_value VARCHAR,
+    expected_value VARCHAR,
+    PRIMARY KEY (dataset_id, issue_id)
+);
