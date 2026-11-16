@@ -15,6 +15,8 @@ The project focuses on reliable data ingestion and traceable detection of incons
 - Prevents duplicate ingestion of an identical source manifest, while allowing different generated datasets to coexist.
 - Reviews expected visits, measurement completeness, dates, codes, units, synthetic review ranges and adverse-event chronology without changing source records.
 - Stores issue IDs, severity, affected-record references and evaluation history; exports a CSV issue report.
+- Displays quality findings in a local Streamlit dashboard, with reviewer notes recorded separately from synthetic study data.
+- Produces five simplified, explicitly noncompliant CDISC-inspired synthetic CSV views.
 
 ## Data flow
 
@@ -28,6 +30,8 @@ flowchart LR
     E --> G[Ingestion history]
     F --> H[Data quality review]
     H --> I[Issue log and CSV report]
+    I --> J[Dashboard and review annotations]
+    F --> K[Simplified synthetic domain exports]
 ```
 
 The input data is synthetic. Study groups, measurements and adverse events are simulated; they are not records from a clinical trial.
@@ -86,7 +90,7 @@ Generated CSV files and the local DuckDB database are ignored by Git. A small ex
 
 ## Explore study quality in the dashboard
 
-The optional local Streamlit dashboard shows study counts, current findings by rule/site/visit/severity, an interactive findings table, and quality evaluation history. Data is queried **read-only**; ingestion and reviews remain separate commands.
+The optional local Streamlit dashboard shows study counts, findings by rule/site/visit/severity, a searchable findings table and evaluation history. The source study tables are queried **read-only**; the review form can write annotations to a separate review-event table. Ingestion and quality evaluation are run through separate commands.
 
 ```bash
 python -m pip install -e '.[dev,dashboard]'
@@ -134,7 +138,15 @@ Run an isolated end-to-end smoke test:
 python -m clinical_trial.smoke
 ```
 
-The test suite covers deterministic generation, manifest integrity, relational loading, duplicate imports, rollback and quality-review behaviour on controlled defects. The repository also includes a GitHub Actions workflow for running the tests and a sample ingestion sequence.
+The tests cover deterministic generation, manifest integrity, relational loading, duplicate imports, rollback, quality-rule behaviour, review history, synthetic exports and the dashboard.
+
+A separate clean-room check exercises the full workflow on fresh temporary data and leaves your working files untouched:
+
+```bash
+python scripts/verify_release.py
+```
+
+See the [reproducibility guide](docs/reproducibility.md) for the benchmark's expected result and limitations. GitHub Actions runs the tests and this check on Python 3.11 and 3.12.
 
 ## Repository layout
 
@@ -161,6 +173,8 @@ No real patient data is used or needed.
 - [Data quality rules and reporting](docs/data_quality.md)
 - [Review annotations and synthetic exports](docs/review_and_export.md)
 - [Architecture decisions](docs/decisions.md)
+- [Reproducing the demonstration](docs/reproducibility.md)
+- [Changelog](CHANGELOG.md)
 
 ## License
 

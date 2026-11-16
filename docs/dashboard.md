@@ -1,7 +1,6 @@
 # Interactive quality dashboard
 
-The dashboard provides a **read-only** view over the local DuckDB study database.
-It never imports datasets, runs quality checks, changes records or adjudicates findings.
+The dashboard reads source study records and quality findings without changing them. The review form can append local review decisions to a **separate metadata table** in the DuckDB database. It does not modify study observations, perform ingestion or run quality checks.
 All records are simulated. The review bounds are synthetic and are **not medical reference ranges**.
 
 ## Install and launch
@@ -37,8 +36,9 @@ Change the path in the sidebar if required.
 ## How to read the results
 
 - **Overview** gives overall source counts, current finding counts and distributions by site, rule, visit and severity. Site, visit, severity, rule and participant filters apply to the charts and findings table, not to the headline dataset totals.
-- **Findings** displays the current issues and allows downloading the **filtered** issue metadata as CSV. No raw participant or measurement tables are exported.
-- **Evaluation history** lists recorded evaluation runs and ruleset checksums. History stores summaries, not historical issue-level snapshots.
+- **Findings** displays current issues, allows CSV export of **filtered issue metadata**, and records local reviewer decisions in a separate table. No source measurements are edited by the review form.
+- **Evaluation history** lists recorded evaluations and ruleset checksums. This history stores run summaries, not historical issue-level snapshots.
+- **Review activity** lists saved review events. Labels are self-reported, and these events are not a tamper-resistant regulatory audit trail.
 - **Data source** can select between multiple imported synthetic batches; rows are isolated by `dataset_id`.
 
 The app does not automatically refresh the database. Streamlit reruns queries when you interact with a control or refresh the page; when running ingestion or quality review externally, refresh the browser to view updated results.

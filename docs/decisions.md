@@ -10,3 +10,5 @@
 8. **Separate quality rules:** The source preflight checks structural validity; clinical acceptability and protocol conformance are separate validation concerns.
 9. **No CDISC-compliance claim:** source tables resemble common clinical study concepts but are not SDTM domains.
 10. **No new cloud/API:** no medical APIs, Snowflake, proprietary connectors or paid infrastructure are required to run the pipeline.
+11. **Separate review annotations:** the dashboard never edits synthetic measurements. Review events are local metadata, not authenticated signatures or regulatory audit evidence.
+12. **Release verification:** the full generator-to-dashboard-data workflow is checked from a fresh temporary source, including deliberate faults, review history and synthetic exports.

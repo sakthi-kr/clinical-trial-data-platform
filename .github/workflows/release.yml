@@ -1,0 +1,33 @@
+name: Publish portfolio snapshot
+
+on:
+  workflow_run:
+    workflows: ["Clinical study data tests"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.event == 'push' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Publish the tested v0.7.0 snapshot once
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if gh release view v0.7.0 >/dev/null 2>&1; then
+            echo "v0.7.0 is already published; no additional action."
+            exit 0
+          fi
+          gh release create v0.7.0 \
+            --target "${{ github.event.workflow_run.head_sha }}" \
+            --title "v0.7.0 - Synthetic Clinical Study Data Platform" \
+            --notes-file RELEASE_NOTES.md
