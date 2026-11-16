@@ -46,3 +46,9 @@ The app does not automatically refresh the database. Streamlit reruns queries wh
 ## Important limitations
 
 A finding reflects one configured rule on a synthetic record. A clean review means only that these synthetic records passed the configured checks, **not** that a real study is clinically valid. Counts in issue charts represent rule-level findings, not unique affected patients. The dashboard has no authentication or support for real patient information, and must not be deployed with identifiable medical records or used for clinical or regulated decisions.
+
+## Local issue review
+
+Within the Findings tab, a review form can append a status, reviewer label, and note for one selected synthetic finding. The underlying participant, measurement, and adverse-event records are never updated by this form. A separate Review activity tab contains earlier review events.
+
+Review labels are self-reported and the dashboard has no login or permission system. Review actions are **not regulatory audit evidence**. See [review annotations](review_and_export.md) for the complete limitations and versioning behaviour.

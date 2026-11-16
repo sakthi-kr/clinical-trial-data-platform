@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "clinical-trial-data-platform"
-version = "0.5.0"
+version = "0.6.0"
 description = "Synthetic clinical study data ingestion, quality checks and reproducible fault-injection evaluation"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -22,6 +22,8 @@ clinical-trial-ingest = "clinical_trial.ingest:main"
 clinical-trial-verify = "clinical_trial.verify:main"
 clinical-trial-quality = "clinical_trial.quality:main"
 clinical-trial-benchmark = "clinical_trial.challenge:main"
+clinical-trial-review = "clinical_trial.review:main"
+clinical-trial-export = "clinical_trial.export_domains:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

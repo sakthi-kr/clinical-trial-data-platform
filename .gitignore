@@ -18,3 +18,6 @@ data/challenge/
 data/challenge_clean/
 data/benchmark/
 data/quality/
+
+# Simplified synthetic domain exports (not regulatory data)
+data/exports/

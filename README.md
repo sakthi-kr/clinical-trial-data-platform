@@ -95,6 +95,14 @@ python -m streamlit run src/clinical_trial/dashboard.py
 
 By default, the dashboard opens the controlled synthetic challenge database if present, otherwise the clean study database. The clean dataset is expected to have no findings; use the [controlled benchmark](docs/benchmark.md) to populate a demonstration with known issues. See [dashboard usage](docs/dashboard.md) for filters and limitations.
 
+## Review workflow and synthetic study exports
+
+The dashboard supports local annotations of current findings: in review, confirmed, or dismissed. Review notes and self-reported reviewer labels are stored in a separate append-only event history; none of these actions alters measurements. Previous decisions are preserved, but do not carry over to changed findings.
+
+An optional command generates five simplified CDISC-inspired CSV views of **synthetic data only** (demographics, visits, vital signs, labs and adverse events), alongside a mapping manifest explicitly marked as noncompliant. These are educational examples, not validated SDTM domains or submission packages.
+
+See [review annotations and synthetic exports](docs/review_and_export.md) for usage, limitations and the absence of authentication or regulatory audit safeguards.
+
 ## Study data
 
 The default configuration is in [`configs/study_protocol.json`](configs/study_protocol.json). The generator creates the following records with its default seed:
@@ -134,7 +142,7 @@ The test suite covers deterministic generation, manifest integrity, relational l
 configs/                 Study configuration and quality rules
 data/example/             Small synthetic CSV sample
 docs/                     Study protocol, data dictionary, ingestion design
-src/clinical_trial/       Generator, source checks, DuckDB loader and quality review
+src/clinical_trial/       Generator, ingestion, quality checks, review actions and exports
 tests/                    Unit and database integration tests
 .github/workflows/        Automated checks
 ```
@@ -151,6 +159,7 @@ No real patient data is used or needed.
 - [Data dictionary](docs/data_dictionary.md)
 - [Database and ingestion design](docs/ingestion.md)
 - [Data quality rules and reporting](docs/data_quality.md)
+- [Review annotations and synthetic exports](docs/review_and_export.md)
 - [Architecture decisions](docs/decisions.md)
 
 ## License
